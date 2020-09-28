@@ -1,0 +1,14 @@
+sudo apt-get install telnetd
+E: Could not get lock /var/lib/dpkg/lock-frontend. It is held by process 3178 (unattended-upgr)
+N: Be aware that removing the lock file is not a solution and may break your system.
+E: Unable to acquire the dpkg frontend lock (/var/lib/dpkg/lock-frontend), is another process using it?
+
+sol1) 이전 설치가 모두 완료될때까지 기다린 후 재 실행 
+sol2) reboot
+sol2) 이전 설치를 강제 종료하고 처음부터 다시 설치
+
+ps -ef | grep apt | grep -v grep  실행 후 프로세스 번호 확인 후 프로세스 강제 종료
+========================================================
+root        5818    5812  0 10:10 pts/3    00:00:00 sudo apt-get install ssh
+
+kill -9 5818    # 프로세스 종료 명령어
