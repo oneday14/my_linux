@@ -1,0 +1,44 @@
+[ os ]
+windows
+unix(GUI 지원되지 않는 서버형 OS) : AIX(IBM), HP-UX(HP), Solaris(ORACLE), ....
+linux(unix 무료 버전) : 우분투, 페도라, oracle linux, centOS...
+
+[ 리눅스 설치 ]
+
+host : window
+guest: linux(우분투, 페도라, oracle linux, centOS...)
+ 
+1. 가상머신 설치(vmware)
+https://www.vmware.com/kr.html
+
+다운로드 > Workstation Pro > 왼쪽 상단에 select version에서 15.0 선택 >
+"VMware Workstation Pro 15.5.6 for Windows" 다운로드(회원가입 후 진행)
+
+2. 리눅스 설치 파일 다운로드(우분투)
+https://ubuntu.com/download
+
+화면 아래에 Ubuntu Desktop 클릭 >
+Ubuntu 20.04.1 LTS 버전 다운로드(오른쪽 download 클릭)
+
+ubuntu-20.04.1-desktop-amd64 다운로드 확인(2.6G, 압축 형식 그대로 유지)
+
+
+3. 서버 원격 접속
+putty 다운로드
+네이버에서 putty 검색 후 다운(64bit)
+
+4. 서버간 파일 전송(window <-> linux)
+winscp
+네이버에서 winscp 검색 후 다운(64bit)
+
+
+
+# 쉘 : 사용자와 cpu의 명령어를 전달하는 기능을 갖춘 환경(명령어)
+- 본쉘(sh) : unix shell******
+- C쉘(csh) : unix shell
+- 콘쉘(ksh) : unix shell
+- 배쉬쉘(bash) : linux shell
+- 대쉬쉘(ash) : linux shell
+
+# 사용자 쉘 : 사용자마다 쉘 지정 및 변경 가능
+
