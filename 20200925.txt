@@ -1,0 +1,137 @@
+# 쉘 : 유닉스, 리눅스의 언어
+- born shell(sh) **
+- c shell(csh)
+- korn shell(ksh)
+- bash shell(bash)
+- dash shell(ash)
+
+# login shell과 sub shell
+# 1. login shell(기본 쉘) : 사용자마다 갖는 환경
+ => 사용자가 login해서 사용하는 기본 쉘
+
+(확인)
+grep 사용자명 /etc/passwd
+
+# 2. sub shell
+login shell과 다른 쉘을 실행할 수 있는 shell
+=> shell script 작성 시 맨 위에 sub shell 명시
+
+# sub shell 명시 시 주의
+실제 sub shell 설치되어 있는지 확인(그 경로 확인)
+which 쉘이름 
+
+
+# 쉘 프로그램
+1. 변수 호출
+$v1
+
+2. 명령어의 실행 결과를 변수에 삽입
+변수명=명령어실행       X
+변수명=`명령어실행`     O
+변수명=$(명령어실행)   O
+
+in R
+df1 <- read.csv('test.txt')
+in python
+df1 = read.csv('test.txt')
+
+
+# expr : 정수 연산
+
+#!/usr/bin/sh
+
+num1=100
+num2=200
+num3=$num1+$num2                             # 연산 불가              
+num4=`expr $num1 + $num2`
+num5=`expr $num1 \* $num2`                  # 곱하기 연산 시 반드시 \* 전달 
+num6=`expr \( $num1 + $num2 \) / 10`     # 연산시 괄호 사용할때 반드시 \( 로 전달
+num7=`expr \( $num1 + $num2 \) / 1000`
+echo "num3 : $num3"
+echo "num4 : $num4"
+echo "num5 : $num5"
+echo "num6 : $num6"
+echo "num7 : $num7"                               # 0.3이 아닌 0이 출력(expr이 정수만 리턴)
+
+
+# bc : 실수 연산 가능
+
+
+#!/usr/bin/sh
+
+num1=100
+num2=200
+num7=`expr \( $num1 + $num2 \) / 1000`             # 정수 리턴만 가능
+num8=`echo \( $num1 + $num2 \) / 1000 | bc -l`    # 소수점 리턴은 -l 옵션 필수
+echo "num7 : $num7"
+echo "num8 : $num8"
+
+
+# read : 사용자로부터 값을 받아올때 사용
+read 변수명   # 사용자가 입력한 값이 바로  변수명에 저장
+
+
+#!/usr/bin/sh
+echo "input user name : \c"      # \c 커서를 이 자리에 위치하게 할 수 있음
+read vuser                             # read 뒤의 변수는 절대 $와 함께 사용 X
+
+if grep $vuser /etc/passwd > /dev/null    # 명령어의 결과를 화면에 출력하지 않게 하기 위함
+then
+  echo "$vuser exists"
+else
+  echo "$vuser not exists"
+fi
+
+
+[ 연습 문제 - test1.sh ]
+두 수를 입력받아 다음과 같은 형식으로 출력
+10 + 20 = 30
+10 * 20 = 200
+
+v1 test1.sh
+
+#!/usr/bin/sh
+
+echo "1st var input : \c"
+read v1
+echo "2st var input : \c"
+read v2
+
+v3=`echo $v1 + $v2 | bc`
+v4=`echo $v1 \* $v2 | bc`
+
+echo "$v1 + $v2 = $v3"
+echo "$v1 * $v2 = $v4"
+
+:wq
+
+[ 연습 문제 - test2.sh ]
+사용자로부터 디렉토리명을 전달
+사용자로부터 파일명을 전달받아
+
+해당 디렉토리에 해당 파일이 존재하면 파일이 존재합니다.
+존재하지 않으면 파일이 존재하지 않습니다. 출력
+
+vi test2.sh
+
+#!/usr/bin/sh
+
+echo "디렉토리명을 입력하세요 : \c"
+read vdir
+
+echo "찾을 파일명을 입력하세요 : \c"
+read fname
+
+if [ -f $vdir/$fname ]
+then
+  echo "$fname 파일이 존재합니다"
+else
+  echo "$fname 파일이 존재하지 않습니다"
+fi
+
+:wq
+
+putty 화면 색 설정 방법
+default foreground : 글자 색
+default backgroud  : 배경 색
+
