@@ -1,0 +1,48 @@
+# 리눅스에서 통신이 안되는 경우
+
+1. apt-get install 설치가 안되는 경우
+fail to fetch http://~~~~~~~
+failure resolving ~~~~~~
+
+
+2. wget www.naver.com 실행 시 에러 발생 하는 경우
+
+
+sol1) host network 영역역대와 guest network 영역대가 같은지 확인
+=================================================
+C:\Users\KITCOOP>ipconfig
+
+Windows IP 구성
+
+
+이더넷 어댑터 이더넷:
+
+   연결별 DNS 접미사. . . . :
+   링크-로컬 IPv6 주소 . . . . : fe80::bdad:6bb9:c3a9:a760%15
+   IPv4 주소 . . . . . . . . . : 192.168.0.115                                   # host network 영역대
+   서브넷 마스크 . . . . . . . : 255.255.255.0
+   기본 게이트웨이 . . . . . . : 192.168.0.1
+
+이더넷 어댑터 VMware Network Adapter VMnet1:
+
+   연결별 DNS 접미사. . . . :
+   링크-로컬 IPv6 주소 . . . . : fe80::813f:9934:f51e:b853%6
+   IPv4 주소 . . . . . . . . . : 192.168.71.1                                     # guest network 영역대
+   서브넷 마스크 . . . . . . . : 255.255.255.0
+   기본 게이트웨이 . . . . . . :
+
+이더넷 어댑터 VMware Network Adapter VMnet8:
+
+   연결별 DNS 접미사. . . . :
+   링크-로컬 IPv6 주소 . . . . : fe80::c1a7:b228:f356:ba7f%5
+   IPv4 주소 . . . . . . . . . : 192.168.48.1
+   서브넷 마스크 . . . . . . . : 255.255.255.0
+   기본 게이트웨이 . . . . . . :
+
+
+다른 경우 조치
+vmware 상단 메뉴의 Edit > Virtual Network Editor > 하단에 Change Settings >
+VMnet1 클릭 후 Subnet IP를 host IP 영역대로 변경(앞에 두 자리)
+VMnet8 클릭 후 Subnet IP를 host IP 영역대로 변경(앞에 두 자리)
+
+네트웍 리스타트 
