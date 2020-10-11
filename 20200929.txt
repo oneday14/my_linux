@@ -1,0 +1,328 @@
+# 사용자 정의 함수
+- 실제 함수가 실행되는 과정은 명령어 형식
+- 함수에 인자 전달 방식이 R, Python과 다름
+- 함수 실행 시 전달 할 인자를 차례대로 나열
+- 함수 본문에는 위치변수로 인자 전달
+
+함수명 () {
+함수본문
+}
+
+ex)
+func1 () {
+ echo "$1"
+ echo "$2"
+}
+
+func1 abcd efg   # 함수의 실행, 첫번째 인자($1)는  abcd, 두번째 인자 efg
+
+[ 연습 문제 - func2.sh ]
+두 수를 전달 받아 다음을 출력
+1 + 10 = 11
+1 * 10  = 10
+
+--------------------
+#!/usr/bin/sh
+
+func1 () {
+v1=`echo $1 + $2 | bc`
+v2=`echo $1 \* $2 | bc`
+
+echo "$1 + $2 = $v1"
+echo "$1 * $2 = $v2"
+}
+
+func1 1 10
+
+:wq
+--------------------
+
+[ 연습 문제 - func3.sh ]
+파일명과 크기를 입력받아
+해당 파일의 크기가 입력된 크기보다 크면 ~/linux_ex/ch9/backup 디렉토리에 복사
+
+--------------------
+echo "파일명을 입력하세요 : \c"
+read fname
+
+echo "파일 크기를 입력하세요 : \c"
+read fsize
+
+func2 () {
+vsize=`ls -l $1 | cut -d" " -f5`
+
+if [ $vsize -gt $2 ]
+then
+  cp $1 ~/linux_ex/ch9/backup
+fi
+}
+
+func2 $fname $fsize
+
+:wq
+--------------------
+
+
+[ 연습문제 -  menu.sh]
+메뉴 선택, 메뉴 이전으로 돌아가기
+
+<첫번째 화면>
+┌────────┐
+│      메뉴 선택     │
+│                        │
+│ 1 : 파일 확인      │
+│ 2 : 파일 삭제      │
+│ 3 : 파일 복사      │
+└────────┘
+
+<1 선택 후 화면>
+파일명을 입력하세요(p:prior, q:quit) : 
+
+--------------------
+#!/usr/bin/sh
+
+# 사용자 정의 함수(이전 메뉴 돌아가기, 종료하기)
+
+f_select () {
+ # 이전화면으로 돌아가기
+ if [ $1 = "p" ]
+ then
+   continue
+ fi
+
+ # 프로그램 종료하기
+ if [ $1 = "q" ]
+ then
+   echo "프로그램을 종료하겠습니다"
+   exit 0
+ fi
+}
+
+# main body
+# 메뉴를 만들고 화면전환, 이전화면으로 돌아가기 등의 구현
+while [ 1 ]
+do
+  clear
+  echo "┌────────────────────┐"
+  echo "│      메뉴 선택     │"
+  echo "│                    │"
+  echo "│ 1 : 파일 확인      │"
+  echo "│ 2 : 파일 삭제      │"
+  echo "│ 3 : 파일 복사      │"
+  echo "└────────────────────┘"
+
+  echo "메뉴를 선택하세요 : \c"
+  read ans
+
+  case $ans in
+   1)
+    clear
+    echo "┌────────────────────┐"
+    echo "│ 1 : 파일 확인      │"
+    echo "└────────────────────┘"
+    echo
+    echo "파일명을 입력하세요(p:prior, q:quit) : \c"
+    read ans2
+
+    # 이전 메뉴 돌아가기, 종료하기 실행
+    f_select $ans2
+
+    # 파일 확인하기
+    if [ -f $ans2 ]
+    then
+      echo "$ans2 파일이 있습니다"
+    else
+      echo "$ans2 파일이 없습니다"
+    fi
+
+    # 이전 메뉴 돌아가기, 종료하기 실행
+    echo "메뉴를 선택하세요(p:prior, q:quit) : \c"
+    read vsel
+    f_select $vsel
+    ;;
+   2)
+    while [ 1 ]
+    do
+      clear
+      echo "┌────────────────────┐"
+      echo "│ 2 : 파일 삭제      │"
+      echo "└────────────────────┘"
+      echo
+      echo "삭제할 파일명을 입력하세요(p:prior, q:quit) : \c"
+      read ans2
+
+      # 파일 확인하기
+      if [ -f $ans2 ]
+      then
+        echo "$ans2 파일이 존재합니다"
+        break
+      else
+        echo "$ans2 파일이 존재하지 않습니다"
+        continue
+      fi
+    done
+
+    # 이전 메뉴 돌아가기, 종료하기 실행
+    f_select $ans2
+
+    # 파일 삭제하기
+    echo "$ans2 파일을 삭제할까요? \c"
+    read vdel
+
+    case $vdel in
+    [Yy]*)
+      rm $ans2
+      echo "$ans2 파일이 삭제되었습니다"
+      ;;
+    [nn]*)
+      echo "$ans2 파일을 삭제하지 않겠습니다"
+      echo "프로그램을 종료합니다"
+      exit 0
+      ;;
+    *)
+      echo "잘못 입력되었습니다"
+      echo "프로그램을 종료합니다"
+      exit 0
+      ;;
+    esac
+
+    # 이전 메뉴 돌아가기, 종료하기 실행
+    echo "메뉴를 선택하세요(p:prior, q:quit) : \c"
+    read vsel
+    f_select $vsel
+    ;;
+   3)
+    clear
+    echo "┌────────────────────┐"
+    echo "│ 3 : 파일 복사      │"
+    echo "└────────────────────┘"
+    echo
+    echo "복사할 파일명을 입력하세요(p:prior, q:quit) : \c"
+    read ans2
+
+    # 이전 메뉴 돌아가기, 종료하기 실행
+    f_select $ans2
+
+    # 복사할 디렉토리 입력
+    echo "복사할 디렉토리를 입력하세요 : \c"
+    read vdir
+
+    if [ -d $vdir ]
+    then
+      echo "디렉토리가 존재합니다. 복사를 진행하겠습니다"
+    else
+      echo "디렉토리가 존재하지 않습니다. 생성하겠습니다"
+      mkdir -p $vdir
+    fi
+
+    # 파일 복사
+    cp $ans2 $vdir
+    echo "$ans2 파일이 복사되었습니다"
+
+    # 이전 메뉴 돌아가기, 종료하기 실행
+    echo "메뉴를 선택하세요(p:prior, q:quit) : \c"
+    read vsel
+    f_select $vsel
+    ;;
+  esac
+done
+
+:wq
+--------------------
+
+
+# awk : 파일과 관련된 다양한 처리를 하는 명령어
+
+[문법]
+awk [옵션] '명령어' 파일명
+
+1. cut 기능
+kic@kic-virtual-machine:~/linux_ex/ch9$ ls -l test1.sh | cut -d" " -f5
+182
+
+kic@kic-virtual-machine:~/linux_ex/ch9$ ls -l test1.sh | awk '{print $5}'
+182
+
+kic@kic-virtual-machine:~/linux_ex/ch9$ ls -l test1.sh | awk '{print $NF}'      # 마지막 필드
+test1.sh
+
+kic@kic-virtual-machine:~/linux_ex/ch9$ ls -l test1.sh | awk '{print $(NF-1)}'  # 마지막 이전 필드
+12:03
+
+kic@kic-virtual-machine:~/linux_ex/ch9$ ls -l test1.sh | awk '{print $(NF-2)}'  # 마지막 이전 이전 필드
+29
+
+
+kic@kic-virtual-machine:~/linux_ex/ch9$ grep kic /etc/passwd | cut -d: -f1
+kic
+
+kic@kic-virtual-machine:~/linux_ex/ch9$ grep kic /etc/passwd | awk -F: '{print $1}'                                                                                         kic
+kic
+
+[ 추가 기능 - 명령어 결과 편집 기능 ]
+kic@kic-virtual-machine:~/linux_ex/ch9$ v1=`ls -l test1.sh | cut -d" " -f5`
+kic@kic-virtual-machine:~/linux_ex/ch9$ echo "file size = $v1"
+file size = 182
+
+kic@kic-virtual-machine:~/linux_ex/ch9$ ls -l test1.sh | awk '{print "file size = " $5}         '
+file size = 182
+
+
+[ 연습 문제 - test10.sh ]
+awk를 사용하여 *.sh에 대해 다음처럼 출력
+파일이름 : 	파일사이즈: 
+
+--------------------
+#!/usr/bin/sh
+
+for fname in $(ls *.sh)
+do
+  ls -l $fname | awk '{print "파일이름:" $NF "        파일사이즈:" $5}'
+done
+
+:wq
+--------------------
+
+
+# tee : 명령어의 결과를 화면 및 파일에 동시에 출력하는 방법 
+
+명령어 | tee -a 파일명
+
+[ 예제 ]
+--------------------
+#!/usr/bin/sh
+
+# 프로그램 처리 결과를 로깅 하는 방법
+# 1. 출력 리다이렉션 사용
+
+echo "프로그램 시작하겠습니다"         > log.txt
+cp test1.sh ~/linux_ex/ch9/backup
+echo "test1.sh 파일이 복사되었습니다"  >> log.txt
+
+# 2. tee를 사용한 로깅 방법
+echo "tee를 사용한 로깅을 시작하겠습니다" | tee -a log_tee.txt
+echo "프로그램 시작하겠습니다"            | tee -a log_tee.txt
+cp test1.sh ~/linux_ex/ch9/backup
+echo "test1.sh 파일이 복사되었습니다"     | tee -a log_tee.txt
+
+:wq
+--------------------
+
+
+# tr : 글자의 치환
+
+[ 문법 ] 
+tr '변경전글자' '변경후글자' < 파일명       # 세번째 인자에 파일명 전달 불가(입력 리다이렉션으로 전달)
+cat 파일명 | tr '변경전글자' '변경후글자'   # cat으로 파일 내용 출력 후 전달
+
+
+cat test1.sh | tr '[a-z]' '[A-Z]'               # 소문자를 대문자로 모두 치환, 원본 변경 X
+cat test1.sh | tr '[a-z]' '[A-Z]' > test1.sh  # 같은 파일로 수정 불가
+
+
+
+# eval : 문자열을 바로 실행시켜주는 명령어(파이썬과 동일)
+
+[ 문법 ]
+eval 문자열
+
