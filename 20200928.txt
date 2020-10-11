@@ -1,0 +1,235 @@
+연습 문제) test3.sh
+사용자로부터 유저명을 입력받고 다음을 수행
+1. 유저 확인
+2. 유저 소유의 파일 목록 출력(~/linux_ex/ch9 에서만 찾아 출력)
+
+--------------------
+#!/usr/bin/sh
+
+# 사용자 확인 쉘 프로그램
+
+echo "사용자명을 입력하세요 : \c"
+read vuser
+
+echo "┌──────────────────────────┐"
+echo "│ 다음의 메뉴를 선택하세요 │"
+echo "└──────────────────────────┘"
+echo
+echo "┌────────────────────────────┐"
+echo "│ 1. 유저 확인               │"
+echo "│ 2. 유저 소유 파일 목록 확인│"
+echo "└────────────────────────────┘"
+echo
+echo "메뉴 입력 ☞ \c"
+
+read ans
+
+case $ans in
+ 1)
+   if grep -w ^$vuser /etc/passwd > /dev/null
+   then
+     echo "$vuser 유저가 존재합니다"
+   else
+     echo "$vuser 유저가 존재하지 않습니다"
+   fi
+   ;;
+ 2)
+   find ~/linux_ex/ch9 -user $vuser -type f
+   ;;
+ *)
+   echo "메뉴가 잘못 입력되었습니다"
+   ;;
+esac
+
+:wq
+--------------------
+
+# wc : world count(파일의 라인수, 단어수, 글자수 출력)
+
+[문법]
+wc [옵션] 파일명
+
+kic@kic-virtual-machine:~/linux_ex/ch9$ wc test2.sh
+ 14  	33 	263 	test2.sh
+라인수  단어수   글자수	파일명
+
+kic@kic-virtual-machine:~/linux_ex/ch9$ wc -l test2.sh
+14 test2.sh
+
+kic@kic-virtual-machine:~/linux_ex/ch9$ wc -w test2.sh
+33 test2.sh
+
+kic@kic-virtual-machine:~/linux_ex/ch9$ wc -c test2.sh
+263 test2.sh
+
+kic@kic-virtual-machine:~/linux_ex/ch9$ cat test2.sh | wc -l   # 파일명 대신 cat으로 파일내용을 전달
+14                                                                                # 숫자만 리턴(파일명은 생략)
+
+
+# cut
+1. substr 함수처럼 특정 문자열 추출
+2. split 함수처럼 분리 구분기호를 전달, 분리된 slice 추출
+
+
+[문법]
+cut [옵션] 파일명
+
+cut -b1-3 test3.sh    # test3.sh을 열고, 각 라인마다 1~3 바이트 추출
+cut -c1-3 test3.sh    # test3.sh을 열고, 각 라인마다 1~3 글자(character) 추출
+cut -c1- test3.sh     # test3.sh을 열고, 각 라인마다 1~끝까지 글자(character) 추출
+cut -c-4 test3.sh     # test3.sh을 열고, 각 라인마다 처음~4 글자(character) 추출
+
+cut -d: -f1 /etc/passwd   # passwd 파일을 열고, 각 라인을 :으로 분리한 뒤 첫번째 필드 추출
+
+cut -d" " -f1 "a b c d e"            # "a b c d e" 가 파일명이 아니므로 에러발생
+echo "a b c d e" | cut -d" " -f1   # "a b c d e"를 echo로 화면에 출력한 후 cut에 전달(열려있는 형태로 전달)
+
+
+[ 예제 ] 
+~/linux_ex/ch9 디렉토리 및에 sh로 끝나는 파일들의 파일 사이즈를 출력
+
+find -name "*.sh" -type f -exec ls -l {} \; | cut -d" " -f5,10
+
+
+# 반복문
+1. for문 : 대상 제한
+
+for 반복변수 in 대상            # 대상 : 나열, 변수, 명령어의 결과
+do
+    반복문
+done
+
+예1)
+for 반복변수 in 1 2 3 4 
+do
+    반복문
+done
+
+예2) 
+for 반복변수 in $(ls *.sh)    # `ls *.sh` 와 동일한 표현 
+do
+    반복문
+done
+
+
+[ 연습 문제 - test4.sh ] 
+1~ 10까지의 합 출력
+
+--------------------
+#!/usr/bin/sh
+
+vsum=0
+for i in 1 2 3 4 5 6 7 8 9 10
+do
+    vsum =`echo $vsum + $i | bc`
+done
+
+echo "1+2+...+10 = $vsum"
+
+:wq
+--------------------
+
+[ 연습 문제 - test5.sh ]
+~/linux_ex/ch9 디렉토리에 있는 *.sh 파일들에 대해
+파일 라인 수가 10 이상이면 ~/linux_ex/ch9/backup 디렉토리로 복사하는 처리
+
+--------------------
+#!/usr/bin/sh
+
+# backup directory create
+if [ -d ~/linux_ex/ch9/backup ]
+then
+   echo > /dev/null
+else
+   mkdir -p ~/linux_ex/ch9/backup
+fi
+
+# main shell
+for fname in *.sh    # 현재 디렉토리에서 *.sh 파일을 찾음
+do
+  lnum=`cat $fname | wc -l`
+  if [ $lnum -ge 10 ]
+  then
+     cp $fname ~/linux_ex/ch9/backup
+     echo "$fname 파일이 복사되었습니다"
+  fi
+done
+
+:wq
+--------------------
+
+
+2. while문 : 조건 제한
+
+while [ 조건 ]          # 조건이 참이면 무한 반복(! : 부정연산자)
+do
+     반복할 문장
+done
+
+
+[ 연습문제 - while1.sh ]
+while 문을 이용하여 1부터 100까지 더한 값을 출력하는 프로그램을 작성
+
+--------------------
+#!/usr/bin/sh
+
+i=1
+sum=0
+
+while [ $i -ne 101 ]
+do
+  sum=`echo $sum + $i | bc`
+  i=`echo $i + 1 | bc`
+done
+
+echo "$sum"
+
+:wq
+--------------------
+
+
+3. until문 : 조건 제한(while문과 조건이 반대)
+
+until [ 조건 ]          # 조건이 거짓이면 무한 반복 (조건이 참이 될때까지)
+do
+     반복할 문장
+done
+
+
+# 반복 제어문
+1. break      : 즉시 반복문 종료
+2. continue  : 반복문의 처음으로 돌아감(뒷 문장을 생략)
+3. exit        : 즉시 프로그램 종료
+
+
+[ 연습문제 - test6.sh ]
+사용자로부터 파일명을 입력받고
+파일이 존재하지 않으면 계속 파일명을 받도록 처리,
+파일이 존재하면 아래 정보 출력
+
+파일명 : test.sh
+파일크기 : 412 bytes
+파일소유자 : kic
+
+--------------------
+#!/usr/bin/sh
+
+echo "파일명을 입력해주세요 : \c"
+read fname
+
+while [ 1 ]
+do
+  if [ -f $fname ]
+  then
+    echo "파일명 : $fname"
+    echo "파일크기 : `ls -l $fname | cut -d" " -f5`"
+    echo "파일소유자 : `ls -l $fname | cut -d" " -f3`"
+    break
+  else
+    echo "파일이 존재하지 않습니다. 파일명을 입력해주세요 : \c"
+    read fname
+  fi
+done
+
+:wq
+--------------------
