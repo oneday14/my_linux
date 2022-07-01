@@ -1,0 +1,12 @@
+virtualenv 가상환경이름 --python=python3 : 가상환경 설정
+pip list : 깔려있는 library확인
+pip install -r 파일명 : 파일명안에 있는 library설치됨
+vi 파일명 : 파일 보기
+source ./bin/activate : 가상환경 실행
+F1 : command palette
+ctrl+` : 터미널 열기
+ctrl+F5 : 실행
+ctrl+F2 : 현재단어 모두선택
+watch -d -n 1 nvidia-smi : 모니터링
+ctrl + z : 모니터링 화면에서 나가기
+kill -9 내PID(1870672) : 강제로 GPU 끄기
